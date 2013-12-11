@@ -13,11 +13,15 @@ exports.encrypt = function (pub, opts) {
     var pubkey = ursa.createPublicKey(pub);
     var bufsize = pubkey.getModulus().length;
     var blocks = new BlockStream(bufsize - 42, { nopad: true });
-    
-    return combine(blocks, through(function (buf, e, next) {
+    var enc = through(function (buf, e, next) {
         this.push(pubkey.encrypt(buf));
         next();
-    }));
+    });
+    
+    if (opts.encoding === 'buffer' || opts.encoding === undefined) {
+        return combine(blocks, enc);
+    }
+    return combine(blocks, enc, through({ encoding: opts.encoding }));
 };
 
 exports.decrypt = function (priv, opts) {
@@ -33,5 +37,11 @@ exports.decrypt = function (priv, opts) {
         this.push(privkey.decrypt(buf));
         next();
     });
-    return combine(blocks, decrypt);
+    if (opts.encoding === 'buffer' || opts.encoding === undefined) {
+        return combine(blocks, decrypt);
+    }
+    var b64decode = through(function (buf, e, next) {
+        this.push(Buffer(buf.toString(), opts.encoding));
+    });
+    return combine(b64decode, blocks, decrypt);
 };
