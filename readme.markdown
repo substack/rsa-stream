@@ -1,6 +1,6 @@
 # rsa-stream
 
-RSA encrypt/decrypt streams
+encrypt/decrypt rsa with streams
 
 # example
 
