@@ -1,5 +1,5 @@
 var ursa = require('ursa');
-var toPEM = require('http-signature').sshKeyToPEM;
+var toPEM = require('ssh-key-to-pem');
 var inherits = require('inherits');
 var BlockStream = require('block-stream');
 var combine = require('stream-combiner');
@@ -34,7 +34,13 @@ exports.decrypt = function (priv, opts) {
     
     var blocks = new BlockStream(bufsize, { nopad: true });
     var decrypt = through(function (buf, e, next) {
-        this.push(privkey.decrypt(buf));
+        var ciphertext
+        try {
+          ciphertext = privkey.decrypt(buf)
+        } catch (err) {
+          return this.emit('error', err)
+        }
+        this.push(ciphertext);        
         next();
     });
     if (opts.encoding === 'buffer' || opts.encoding === undefined) {
