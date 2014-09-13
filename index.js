@@ -2,8 +2,9 @@ var ursa = require('ursa');
 var toPEM = require('ssh-key-to-pem');
 var inherits = require('inherits');
 var BlockStream = require('block-stream');
-var combine = require('stream-combiner');
+var combine = require('stream-combiner2');
 var through = require('through2');
+var defined = require('defined');
 
 exports.encrypt = function (pub, opts) {
     if (!opts) opts = {};
@@ -13,7 +14,23 @@ exports.encrypt = function (pub, opts) {
     var pubkey = ursa.createPublicKey(pub);
     var bufsize = pubkey.getModulus().length;
     var blocks = new BlockStream(bufsize - 42, { nopad: true });
+    
+    var limit = defined(opts.limit, 100);
+    var len = 0;
     var enc = through(function (buf, e, next) {
+        len += buf.length;
+        if (len > limit) {
+            var err = new Error(
+                'Encryption limit (' + opts.limit + ' bytes) reached.\n'
+                + 'It is not advisable to encrypt over (n/8-11) bytes with'
+                + 'asymmetric crypto for an `n` byte key.\n'
+                + 'Instead, encrypt a key data with asymmetric crypto for a '
+                + 'symmetric encryption cipher.\n'
+                + 'See also: http://stackoverflow.com/questions/5583379'
+            );
+            err.type = 'LIMIT';
+            return this.emit('error', err);
+        }
         this.push(pubkey.encrypt(buf));
         next();
     });
