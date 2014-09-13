@@ -2,6 +2,12 @@
 
 encrypt/decrypt rsa with streams
 
+This module is a bit silly unless you are using it as a wrapper because you
+[shouldn't](http://stackoverflow.com/questions/5583379/what-is-the-limit-to-the-amount-of-data-that-can-be-encrypted-with-rsa/5586652#5586652)
+[encrypt](https://github.com/substack/cipherhub/issues/2)
+too many bytes with asymmetric crypto. Instead, encrypt a key for a symmetric
+cipher in a short header and then switch to symmetric crypto for the payload.
+
 # example
 
 ## encrypt
@@ -55,6 +61,10 @@ the given `publicKey` and output the encrypted stream with `opts.encoding`
 
 `publicKey` should be a string or buffer with PEM key data or the openssh-style
 public keys typically found in ~/.ssh that begin with `/^ssh-rsa\b/`
+
+If more than `opts.limit` bytes are written, an error is thrown. The default
+number of bytes is 100, which you should only raise to maximally `n/8-11` for an
+`n`-bit RSA key.
 
 ## var dec = rsa.decrypt(privateKey, opts)
 
