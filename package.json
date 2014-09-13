@@ -1,6 +1,6 @@
 {
   "name": "rsa-stream",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "encrypt/decrypt rsa with streams",
   "main": "index.js",
   "dependencies": {
