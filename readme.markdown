@@ -8,6 +8,9 @@ This module is a bit silly unless you are using it as a wrapper because you
 too many bytes with asymmetric crypto. Instead, encrypt a key for a symmetric
 cipher in a short header and then switch to symmetric crypto for the payload.
 
+You should probably be using
+[hybrid-rsa-stream](https://npmjs.org/package/hybrid-rsa-stream) instead.
+
 # example
 
 ## encrypt
