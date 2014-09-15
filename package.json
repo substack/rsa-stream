@@ -8,7 +8,7 @@
     "defined": "~0.0.0",
     "duplexer2": "~0.0.1",
     "inherits": "~2.0.1",
-    "stream-combiner2": "^1.0.2",
+    "stream-combiner2": "^1.0.1",
     "through2": "~0.2.3",
     "ursa": "~0.8.0",
     "ssh-key-to-pem": "~0.10.0"
